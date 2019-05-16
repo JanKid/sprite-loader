@@ -8,6 +8,8 @@ const loaderUtils = require('loader-utils');
 
 
 const spriteUrlPattern = /url\((?:"|')?(\S+)\?__sprite(?:"|')?\)/;
+// judge url regexp
+const urlPattern = /((http|ftp|https):)?\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?/;
 
 const helper = require('./helper');
 const parser = require('./parser');
@@ -29,7 +31,9 @@ module.exports = function(content) {
         callback(null, content);
         return;
     }
-
+    // filter http network image request sprite image
+    res = res.filter((rule) => !urlPattern.test(rule[rule.property]))
+    
     for (let i = 0; i < res.length; i++) {
         let property = res[i].property;
         let urlPath = res[i][property];
